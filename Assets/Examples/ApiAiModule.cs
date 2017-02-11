@@ -115,6 +115,13 @@ public class ApiAiModule : MonoBehaviour
         {
             ExecuteOnMainThread.Dequeue().Invoke();
         }
+		if (Input.GetKeyDown (KeyCode.Space)) {
+			Debug.Log ("Space Key Pressed!");
+			StartListening ();
+		} else {
+			StopListening ();
+			//Space bar isn't pressed
+		}
     }
 
     private void RunInMainThread(Action action)

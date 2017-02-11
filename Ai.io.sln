@@ -1,11 +1,11 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2008
-
-Project("{5F40BC17-72F4-EEFF-EB52-C5C5786FC048}") = "Ai.io", "Assembly-CSharp-firstpass.csproj", "{33C8CA03-DEE1-734E-E03B-BC522AD15A44}"
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai.io", "Assembly-CSharp-firstpass.csproj", "{33C8CA03-DEE1-734E-E03B-BC522AD15A44}"
 EndProject
-Project("{5F40BC17-72F4-EEFF-EB52-C5C5786FC048}") = "Ai.io", "Assembly-CSharp.csproj", "{2143FAEC-E6E4-4ED4-B1A0-EC694893DA18}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai.io", "Assembly-CSharp.csproj", "{2143FAEC-E6E4-4ED4-B1A0-EC694893DA18}"
 EndProject
-Project("{5F40BC17-72F4-EEFF-EB52-C5C5786FC048}") = "Ai.io", "Assembly-CSharp-Editor.csproj", "{8A40C888-96AD-B218-7FAD-AD06374CDB9F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ai.io", "Assembly-CSharp-Editor.csproj", "{8A40C888-96AD-B218-7FAD-AD06374CDB9F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
