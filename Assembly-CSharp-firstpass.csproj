@@ -151,14 +151,14 @@
  <Reference Include="UnityEngine.VR">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/UnityVR/RuntimeEditor/UnityEngine.VR.dll</HintPath>
  </Reference>
- <Reference Include="Google.ProtocolBuffers">
- <HintPath>/Users/xiaoxizheng/Documents/Ai.io/Assets/Plugins/Google.ProtocolBuffers.dll</HintPath>
+ <Reference Include="ApiAiSDK">
+ <HintPath>/Users/xiaoxizheng/Documents/Ai.io/Assets/ApiAiSDK/lib/ApiAiSDK.dll</HintPath>
  </Reference>
  <Reference Include="fastJSON">
  <HintPath>/Users/xiaoxizheng/Documents/Ai.io/Assets/ApiAiSDK/lib/fastJSON.dll</HintPath>
  </Reference>
- <Reference Include="ApiAiSDK">
- <HintPath>/Users/xiaoxizheng/Documents/Ai.io/Assets/ApiAiSDK/lib/ApiAiSDK.dll</HintPath>
+ <Reference Include="Google.ProtocolBuffers">
+ <HintPath>/Users/xiaoxizheng/Documents/Ai.io/Assets/Plugins/Google.ProtocolBuffers.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
