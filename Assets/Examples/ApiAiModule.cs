@@ -36,14 +36,12 @@ public class ApiAiModule : MonoBehaviour
 
     public Text answerTextField;
     public Text inputTextField;
-	  public AudioClip listeningSound;
-
     private ApiAiUnity apiAiUnity;
     private AudioSource aud;
-	  private bool startedListening = false;
+    public AudioClip listeningSound;
 
     private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-    {
+    { 
         NullValueHandling = NullValueHandling.Ignore,
     };
 
@@ -63,8 +61,8 @@ public class ApiAiModule : MonoBehaviour
         {
             return true;
         };
-
-		const string ACCESS_TOKEN = "3485a96fb27744db83e78b8c4bc9e7b7";//5566b67b2556447cb8ea0a005475c038 //
+            
+		const string ACCESS_TOKEN = "5566b67b2556447cb8ea0a005475c038";
 
         var config = new AIConfiguration(ACCESS_TOKEN, SupportedLanguage.English);
 
@@ -83,18 +81,18 @@ public class ApiAiModule : MonoBehaviour
             {
                 Debug.Log(aiResponse.Result.ResolvedQuery);
                 var outText = JsonConvert.SerializeObject(aiResponse, jsonSettings);
-
+                
                 Debug.Log(outText);
-
+                
                 answerTextField.text = outText;
-
+                
             } else
             {
                 Debug.LogError("Response is null");
             }
         });
     }
-
+    
     void HandleOnError(object sender, AIErrorEventArgs e)
     {
         RunInMainThread(() => {
@@ -103,7 +101,7 @@ public class ApiAiModule : MonoBehaviour
             answerTextField.text = e.Exception.Message;
         });
     }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -116,24 +114,9 @@ public class ApiAiModule : MonoBehaviour
         while (ExecuteOnMainThread.Count > 0)
         {
             ExecuteOnMainThread.Dequeue().Invoke();
-
         }
     }
 
-	void LateUpdate()
-	{
-		if(apiAiUnity != null) {
-			//Debug.Log ("Space Key Pressed!");
-			if(Input.GetKey(KeyCode.Space) && !startedListening){
-				StartListening ();
-				startedListening = true;
-			}
-			if (Input.GetKey(KeyCode.Escape)){
-				StopListening ();
-				startedListening = false;
-			}
-		}
-	}
     private void RunInMainThread(Action action)
     {
         ExecuteOnMainThread.Enqueue(action);
@@ -141,23 +124,23 @@ public class ApiAiModule : MonoBehaviour
 
     public void PluginInit()
     {
-
+        
     }
-
+    
     public void StartListening()
     {
         Debug.Log("StartListening");
-
+            
         if (answerTextField != null)
         {
             answerTextField.text = "Listening...";
         }
-
+            
         aud = GetComponent<AudioSource>();
         apiAiUnity.StartListening(aud);
 
     }
-
+    
     public void StopListening()
     {
         try
@@ -168,14 +151,14 @@ public class ApiAiModule : MonoBehaviour
             {
                 answerTextField.text = "";
             }
-
+            
             apiAiUnity.StopListening();
         } catch (Exception ex)
         {
             Debug.LogException(ex);
         }
     }
-
+    
     public void SendText()
     {
         var text = inputTextField.text;

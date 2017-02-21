@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Examples/ServiceSample.unity
+- path: Assets/Scene/main.unity
   isLoaded: 1
   isActive: 1
