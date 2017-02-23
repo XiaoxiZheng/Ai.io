@@ -31,6 +31,7 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Collections.Generic;
 
+
 public class MyApiAiModule : MonoBehaviour
 {
 
@@ -40,7 +41,15 @@ public class MyApiAiModule : MonoBehaviour
 
     private ApiAiUnity apiAiUnity;
     private AudioSource aud;
-	  private bool startedListening = false;
+	private bool startedListening = false;
+
+	//Text to Speech Stuff
+	private bool _initializeError = false;
+	private string _inputText = "\n\n\n\n";
+	private int _speechId = 0;
+	private float _pitch = 1f, _speechRate = 1f;
+	private int _selectedLocale = 0;
+	private string[] _localeStrings;
 
     private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
     {
@@ -51,7 +60,12 @@ public class MyApiAiModule : MonoBehaviour
 
     // Use this for initialization
     IEnumerator Start()
-    {
+    {	
+
+		// Screen.sleepTimeout = SleepTimeout.NeverSleep;
+		TTSManager.Initialize(transform.name, "OnTTSInit");
+
+
         // check access to the Microphone
         yield return Application.RequestUserAuthorization(UserAuthorization.Microphone);
         if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
@@ -76,15 +90,9 @@ public class MyApiAiModule : MonoBehaviour
 			StartNativeRecognition();
 		}
 
-        apiAiUnity.OnError += HandleOnError;
-        apiAiUnity.OnResult += HandleOnResult;
-    }
-
-    if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+		if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
 			// Using Unity Default Voice Regonition Powered by Microsoft
-
 		}
-
         apiAiUnity.OnError += HandleOnError;
         apiAiUnity.OnResult += HandleOnResult;
     }
@@ -107,6 +115,10 @@ public class MyApiAiModule : MonoBehaviour
                 Debug.LogError("Response is null");
             }
         });
+
+		if (TTSManager.IsInitialized ()) {
+			TTSManager.Speak(answerTextField.text, false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_" + (++_speechId));
+		}
     }
 
     void HandleOnError(object sender, AIErrorEventArgs e)

@@ -31,165 +31,247 @@ using Newtonsoft.Json;
 using System.Net;
 using System.Collections.Generic;
 
+
 public class ApiAiModule : MonoBehaviour
 {
 
-    public Text answerTextField;
-    public Text inputTextField;
-    private ApiAiUnity apiAiUnity;
-    private AudioSource aud;
-    public AudioClip listeningSound;
+	public Text answerTextField;
+	public Text inputTextField;
+	public AudioClip listeningSound;
 
-    private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
-    { 
-        NullValueHandling = NullValueHandling.Ignore,
-    };
+	private ApiAiUnity apiAiUnity;
+	private AudioSource aud;
+	private bool startedListening = false;
 
-    private readonly Queue<Action> ExecuteOnMainThread = new Queue<Action>();
+	//Text to Speech Stuff
+	private bool _initializeError = false;
+	private int _speechId = 0;
+	private float _pitch = 1f, _speechRate = 1f;
+	private int _selectedLocale = 1;
+	private string[] _localeStrings;
 
-    // Use this for initialization
-    IEnumerator Start()
-    {
-        // check access to the Microphone
-        yield return Application.RequestUserAuthorization(UserAuthorization.Microphone);
-        if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
-        {
-            throw new NotSupportedException("Microphone using not authorized");
-        }
+	private readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+	{
+		NullValueHandling = NullValueHandling.Ignore,
+	};
 
-        ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) =>
-        {
-            return true;
-        };
-            
-		const string ACCESS_TOKEN = "5566b67b2556447cb8ea0a005475c038";
+	private readonly Queue<Action> ExecuteOnMainThread = new Queue<Action>();
 
-        var config = new AIConfiguration(ACCESS_TOKEN, SupportedLanguage.English);
+	// Use this for initialization
+	IEnumerator Start()
+	{	
 
-        apiAiUnity = new ApiAiUnity();
-        apiAiUnity.Initialize(config);
+		// Screen.sleepTimeout = SleepTimeout.NeverSleep;
+		TTSManager.Initialize(transform.name, "OnTTSInit");
 
-        apiAiUnity.OnError += HandleOnError;
-        apiAiUnity.OnResult += HandleOnResult;
-    }
 
-    void HandleOnResult(object sender, AIResponseEventArgs e)
-    {
-        RunInMainThread(() => {
-            var aiResponse = e.Response;
-            if (aiResponse != null)
-            {
-                Debug.Log(aiResponse.Result.ResolvedQuery);
-                var outText = JsonConvert.SerializeObject(aiResponse, jsonSettings);
-                
-                Debug.Log(outText);
-                
-                answerTextField.text = outText;
-                
-            } else
-            {
-                Debug.LogError("Response is null");
-            }
-        });
-    }
-    
-    void HandleOnError(object sender, AIErrorEventArgs e)
-    {
-        RunInMainThread(() => {
-            Debug.LogException(e.Exception);
-            Debug.Log(e.ToString());
-            answerTextField.text = e.Exception.Message;
-        });
-    }
-    
-    // Update is called once per frame
-    void Update()
-    {
-        if (apiAiUnity != null)
-        {
-            apiAiUnity.Update();
-        }
+		// check access to the Microphone
+		yield return Application.RequestUserAuthorization(UserAuthorization.Microphone);
+		if (!Application.HasUserAuthorization(UserAuthorization.Microphone))
+		{
+			throw new NotSupportedException("Microphone using not authorized");
+		}
 
-        // dispatch stuff on main thread
-        while (ExecuteOnMainThread.Count > 0)
-        {
-            ExecuteOnMainThread.Dequeue().Invoke();
-        }
-    }
+		ServicePointManager.ServerCertificateValidationCallback = (a, b, c, d) =>
+		{
+			return true;
+		};
 
-    private void RunInMainThread(Action action)
-    {
-        ExecuteOnMainThread.Enqueue(action);
-    }
+		const string ACCESS_TOKEN = "5566b67b2556447cb8ea0a005475c038";//5566b67b2556447cb8ea0a005475c038 //Default: 3485a96fb27744db83e78b8c4bc9e7b7
 
-    public void PluginInit()
-    {
-        
-    }
-    
-    public void StartListening()
-    {
-        Debug.Log("StartListening");
-            
-        if (answerTextField != null)
-        {
-            answerTextField.text = "Listening...";
-        }
-            
-        aud = GetComponent<AudioSource>();
-        apiAiUnity.StartListening(aud);
+		var config = new AIConfiguration(ACCESS_TOKEN, SupportedLanguage.English);
 
-    }
-    
-    public void StopListening()
-    {
-        try
-        {
-            Debug.Log("StopListening");
+		apiAiUnity = new ApiAiUnity();
+		apiAiUnity.Initialize(config);
 
-            if (answerTextField != null)
-            {
-                answerTextField.text = "";
-            }
-            
-            apiAiUnity.StopListening();
-        } catch (Exception ex)
-        {
-            Debug.LogException(ex);
-        }
-    }
-    
-    public void SendText()
-    {
-        var text = inputTextField.text;
+		if (Application.platform == RuntimePlatform.Android) {
+			// you can use Android recognition here
+			StartNativeRecognition();
+		}
 
-        Debug.Log(text);
+		if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+			// Using Unity Default Voice Regonition Powered by Microsoft
+		}
+		apiAiUnity.OnError += HandleOnError;
+		apiAiUnity.OnResult += HandleOnResult;
+	}
 
-        AIResponse response = apiAiUnity.TextRequest(text);
+	void HandleOnResult(object sender, AIResponseEventArgs e)
+	{
+		RunInMainThread (() => {
+			var aiResponse = e.Response;
+			if (aiResponse != null) {
+				Debug.Log (aiResponse.Result.ResolvedQuery);
+				var outText = JsonConvert.SerializeObject (aiResponse, jsonSettings);
 
-        if (response != null)
-        {
-            Debug.Log("Resolved query: " + response.Result.ResolvedQuery);
-            var outText = JsonConvert.SerializeObject(response, jsonSettings);
+				Debug.Log (outText);
 
-            Debug.Log("Result: " + outText);
+				answerTextField.text = outText;
 
-            answerTextField.text = outText;
-        } else
-        {
-            Debug.LogError("Response is null");
-        }
+			} else {
+				Debug.LogError ("Response is null");
+			}
+		});
 
-    }
+		if (TTSManager.IsInitialized ()) {
 
-    public void StartNativeRecognition()
-    {
-        try
-        {
-            apiAiUnity.StartNativeRecognition();
-        } catch (Exception ex)
-        {
-            Debug.LogException(ex);
-        }
-    }
+			TTSManager.SetLanguage (TTSManager.GetAvailableLanguages () [_selectedLocale]);
+
+			TTSManager.SetPitch (_pitch);
+			TTSManager.SetSpeechRate (_speechRate);
+
+			TTSManager.Speak (answerTextField.text, false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_" + (++_speechId));
+		} else if (_initializeError) {
+			Debug.LogError ("TTSManager _initializeError");
+		}
+	}
+	void HandleOnError(object sender, AIErrorEventArgs e)
+	{
+		RunInMainThread(() => {
+			Debug.LogException(e.Exception);
+			Debug.Log(e.ToString());
+			answerTextField.text = e.Exception.Message;
+		});
+	}
+
+	// Update is called once per frame
+	void Update()
+	{
+		if (apiAiUnity != null)
+		{
+			apiAiUnity.Update();
+		}
+
+		// dispatch stuff on main thread
+		while (ExecuteOnMainThread.Count > 0)
+		{
+			ExecuteOnMainThread.Dequeue().Invoke();
+
+		}
+	}
+
+	void LateUpdate()
+	{
+		if(apiAiUnity != null) {
+			//Debug.Log ("Space Key Pressed!");
+			if(Input.GetKey(KeyCode.Space) && !startedListening){
+				StartListening ();
+				startedListening = true;
+			}
+			if (Input.GetKey(KeyCode.Escape)){
+				StopListening ();
+				startedListening = false;
+			}
+		}
+	}
+	private void RunInMainThread(Action action)
+	{
+		ExecuteOnMainThread.Enqueue(action);
+	}
+
+	public void PluginInit()
+	{
+
+	}
+
+	public void StartListening()
+	{
+		Debug.Log("StartListening");
+
+		if (answerTextField != null)
+		{
+			answerTextField.text = "Listening...";
+		}
+
+		aud = GetComponent<AudioSource>();
+		apiAiUnity.StartListening(aud);
+
+	}
+
+	public void StopListening()
+	{
+		try
+		{
+			Debug.Log("StopListening");
+
+			if (answerTextField != null)
+			{
+				answerTextField.text = "";
+			}
+
+			apiAiUnity.StopListening();
+		} catch (Exception ex)
+		{
+			Debug.LogException(ex);
+		}
+	}
+
+	public void SendText()
+	{
+		var text = inputTextField.text;
+
+		Debug.Log(text);
+
+		AIResponse response = apiAiUnity.TextRequest(text);
+
+		if (response != null)
+		{
+			Debug.Log("Resolved query: " + response.Result.ResolvedQuery);
+			var outText = JsonConvert.SerializeObject(response, jsonSettings);
+
+			Debug.Log("Result: " + outText);
+
+			answerTextField.text = outText;
+		} else
+		{
+			Debug.LogError("Response is null");
+		}
+
+	}
+
+	public void StartNativeRecognition()
+	{
+		try
+		{
+			apiAiUnity.StartNativeRecognition();
+		} catch (Exception ex)
+		{
+			Debug.LogException(ex);
+		}
+	}
+
+
+	void OnDestroy()
+	{
+		TTSManager.Shutdown();
+	}
+
+	void OnTTSInit(string message)
+	{
+		int response = int.Parse(message);
+
+		switch (response)
+		{
+		case TTSManager.SUCCESS:
+			List<TTSManager.Locale> l = TTSManager.GetAvailableLanguages();
+			_localeStrings = new string[l.Count];
+			for (int i = 0; i < _localeStrings.Length; ++i)
+				_localeStrings [i] = l [i].Name;
+
+			break;
+		case TTSManager.ERROR:
+			_initializeError = true;
+			break;
+		}
+	}
+
+	void OnSpeechCompleted(string id)
+	{
+		Debug.Log("Speech '" + id + "' is complete.");
+	}
+
+	void OnSynthesizeCompleted(string id)
+	{
+		Debug.Log("Synthesize of speech '" + id + "' is complete.");
+	}
 }

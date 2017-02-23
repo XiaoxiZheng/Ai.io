@@ -1,0 +1,56 @@
+-------------------------------------------------------------------------
+Takohi Android TTS Plugin (Unity3+4)
+(C)opyright 2014 Takohi 
+[contact@takohi.com]
+-------------------------------------------------------------------------
+
+INSTALLATION FROM UNITY ASSET STORE
+
+After you download and import this package from the Unity Asset Store, this product will be automatically be installed.
+
+After importing is complete, you will be ready to go.
+
+-------------------------------------------------------------------------
+
+Examples
+
+in  [Project] /Takohi/Examples/AndroidTTSPlugin you will find one example.
+
+-------------------------------------------------------------------------
+
+Demo
+
+You can download a demo to run on your Android device here:
+www.takohi.com/data/unity/assets/android_tts/unity-android-tts-plugin-demo.apk
+
+-------------------------------------------------------------------------
+
+PACKAGE STRUCTURE
+
+ [Project] Plugins					- Android TTS Plugin
+
+ [Project] Takohi/Examples/AndroidTTSPlugin	- Android TTS Plugin Example
+
+-------------------------------------------------------------------------
+DOCUMENTATION
+
+C# CLASS REFERENCE
+http://www.takohi.com/data/unity/assets/android_tts/documentation/
+
+-------------------------------------------------------------------------
+
+UPDATE
+
+1.1 2016/01/13 Replace DLL by CS file for compatibility
+
+1.0 2014/09/11
+Initial version.
+
+If you have any questions regarding this product, send us an email at contact@takohi.com.
+
+-------------------------------------------------------------------------
+
+Thanks for your interest in our components,
+
+	The Takohi Team.
+
