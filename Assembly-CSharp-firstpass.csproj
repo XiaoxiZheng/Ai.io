@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Plugins\SimpleJSON.cs" />
      <Compile Include="Assets\Plugins\TTSManager.cs" />
      <Compile Include="Assets\Standard Assets\Cameras\Scripts\AbstractTargetFollower.cs" />
      <Compile Include="Assets\Standard Assets\Cameras\Scripts\AutoCam.cs" />

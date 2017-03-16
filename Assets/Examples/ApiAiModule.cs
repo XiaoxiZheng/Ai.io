@@ -30,6 +30,7 @@ using ApiAiSDK.Unity;
 using Newtonsoft.Json;
 using System.Net;
 using System.Collections.Generic;
+using SimpleJSON; 
 
 
 public class ApiAiModule : MonoBehaviour
@@ -83,15 +84,7 @@ public class ApiAiModule : MonoBehaviour
 
 		apiAiUnity = new ApiAiUnity();
 		apiAiUnity.Initialize(config);
-
-		if (Application.platform == RuntimePlatform.Android) {
-			// you can use Android recognition here
-			StartNativeRecognition();
-		}
-
-		if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
-			// Using Unity Default Voice Regonition Powered by Microsoft
-		}
+	
 		apiAiUnity.OnError += HandleOnError;
 		apiAiUnity.OnResult += HandleOnResult;
 	}
@@ -102,28 +95,45 @@ public class ApiAiModule : MonoBehaviour
 			var aiResponse = e.Response;
 			if (aiResponse != null) {
 				Debug.Log (aiResponse.Result.ResolvedQuery);
-				var outText = JsonConvert.SerializeObject (aiResponse, jsonSettings);
+				string outText = JsonConvert.SerializeObject (aiResponse, jsonSettings);
+				Debug.Log ("outText: " + outText);
 
-				Debug.Log (outText);
+				/*
+				var JSON_outText = JSON.Parse(outText);
+				Debug.Log ("JSON_outText: " + JSON_outText);
 
-				answerTextField.text = outText;
+				string endOutputText = JSON_outText["fulfillment"]["speech"].Value;
+				Debug.Log ("endOutputText: " + endOutputText); 
+				*/
+
+				String [] endOutputText = outText.Split(new string[] {"speech"},StringSplitOptions.None);
+				String[] endSubStrings = endOutputText [1].Split (':', '}');
+
+				Debug.Log ("Size of endSubStrings: " + endSubStrings.Length);
+				for (int i = 0; i < endSubStrings.Length; i++) {
+					Debug.Log ("endSubStrings[i]: " + endSubStrings[i]); 
+				}
+
+				if(endSubStrings[1].Equals("")){
+					endSubStrings [1] = "I didn't catch that, will you say it again?"; 
+				}
+				answerTextField.text = endSubStrings[1];
 
 			} else {
 				Debug.LogError ("Response is null");
 			}
+			if (TTSManager.IsInitialized ()) {
+
+				TTSManager.SetLanguage (TTSManager.GetAvailableLanguages () [_selectedLocale]);
+
+				TTSManager.SetPitch (_pitch);
+				TTSManager.SetSpeechRate (_speechRate);
+
+				TTSManager.Speak (answerTextField.text, false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_" + (++_speechId));
+			} else if (_initializeError) {
+				Debug.LogError ("TTSManager _initializeError");
+			}
 		});
-
-		if (TTSManager.IsInitialized ()) {
-
-			TTSManager.SetLanguage (TTSManager.GetAvailableLanguages () [_selectedLocale]);
-
-			TTSManager.SetPitch (_pitch);
-			TTSManager.SetSpeechRate (_speechRate);
-
-			TTSManager.Speak (answerTextField.text, false, TTSManager.STREAM.Music, 1f, 0f, transform.name, "OnSpeechCompleted", "speech_" + (++_speechId));
-		} else if (_initializeError) {
-			Debug.LogError ("TTSManager _initializeError");
-		}
 	}
 	void HandleOnError(object sender, AIErrorEventArgs e)
 	{
@@ -148,19 +158,48 @@ public class ApiAiModule : MonoBehaviour
 			ExecuteOnMainThread.Dequeue().Invoke();
 
 		}
+			
 	}
 
 	void LateUpdate()
 	{
 		if(apiAiUnity != null) {
 			//Debug.Log ("Space Key Pressed!");
-			if(Input.GetKey(KeyCode.Space) && !startedListening){
-				StartListening ();
-				startedListening = true;
+			//Input.GetButtonDown("Submit");
+			if (Application.platform == RuntimePlatform.Android) {
+				// you can use Android recognition here
+				if(Input.GetAxis ("JoyA")==1){
+					StartNativeRecognition();
+					Debug.Log("Vertical : " + Input.GetAxis("Vertical"));
+					Debug.Log("JoyA==1 : " + Input.GetAxis("JoyA"));
+
+				}
+				/*
+				//Input.GetButtonDown("Cancel");
+				if (Input.GetAxis ("JoyB")== 1){
+					StartNativeRecognition();
+					Debug.Log("Horizontal : " + Input.GetAxis("Horizontal"));
+					Debug.Log("JoyB==1 : " + Input.GetAxis("JoyB"));
+				}
+				*/
 			}
-			if (Input.GetKey(KeyCode.Escape)){
-				StopListening ();
-				startedListening = false;
+			else{
+			//if (Application.platform == RuntimePlatform.WindowsPlayer || Application.platform == RuntimePlatform.WindowsEditor) {
+				// Using Unity Default Voice Regonition Powered by Microsoft
+				if(Input.GetKey(KeyCode.Space) && !startedListening || Input.GetAxis ("JoyA")==1 && !startedListening){
+					StartListening ();
+					startedListening = true;
+					Debug.Log("Vertical : " + Input.GetAxis("Vertical"));
+					Debug.Log("JoyA==1 : " + Input.GetAxis("JoyA"));
+
+				}
+				//Input.GetButtonDown("Cancel");
+				if (Input.GetKey(KeyCode.Escape) || Input.GetAxis ("JoyB")== 1){
+					StopListening ();
+					startedListening = false;
+					Debug.Log("Horizontal : " + Input.GetAxis("Horizontal"));
+					Debug.Log("JoyB==1 : " + Input.GetAxis("JoyB"));
+				}
 			}
 		}
 	}
@@ -217,11 +256,29 @@ public class ApiAiModule : MonoBehaviour
 		if (response != null)
 		{
 			Debug.Log("Resolved query: " + response.Result.ResolvedQuery);
-			var outText = JsonConvert.SerializeObject(response, jsonSettings);
+			string outText = JsonConvert.SerializeObject(response, jsonSettings);
+			Debug.Log ("outText: " + outText);
 
-			Debug.Log("Result: " + outText);
+			/*
+			var JSON_outText = JSON.Parse(outText);
+			Debug.Log ("JSON_outText: " + JSON_outText);
 
-			answerTextField.text = outText;
+			string endOutputText = JSON_outText["fulfillment"]["speech"].Value;
+			Debug.Log ("endOutputText: " + endOutputText); 
+			*/
+
+			String [] endOutputText = outText.Split(new string[] {"speech"},StringSplitOptions.None);
+			String[] endSubStrings = endOutputText [1].Split (':', '}');
+
+			Debug.Log ("Size of endSubStrings: " + endSubStrings.Length);
+			for (int i = 0; i < endSubStrings.Length; i++) {
+				Debug.Log ("endSubStrings[i]: " + endSubStrings[i]); 
+			}
+
+			if(endSubStrings[1].Equals("")){
+				endSubStrings [1] = "I didn't catch that, will you say it again?"; 
+			}
+			answerTextField.text = endSubStrings[1];
 		} else
 		{
 			Debug.LogError("Response is null");

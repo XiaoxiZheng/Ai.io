@@ -1,10 +1,11 @@
 ﻿<Properties StartupItem="Assembly-CSharp.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="Unity.Instance.Unity Editor" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Takohi/Examples/AndroidTTSPlugin/TTSDemoSceneManager.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Examples/ApiAiModule.cs">
     <Files>
-      <File FileName="Assets/Takohi/Examples/AndroidTTSPlugin/TTSDemoSceneManager.cs" Line="65" Column="48" />
-      <File FileName="Assets/Examples/MyApiAiModule.cs" Line="85" Column="2" />
-      <File FileName="Assets/Takohi/Android-TTS-Plugin-Read-Me.txt" Line="45" Column="41" />
+      <File FileName="Assets/Examples/ApiAiModule.cs" Line="136" Column="6" />
+      <File FileName="Assets/Takohi/Examples/AndroidTTSPlugin/TTSDemoSceneManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/Plugins/TTSManager.cs" Line="1" Column="1" />
+      <File FileName="Assets/ApiAiSDK/ApiAiUnity.cs" Line="1" Column="1" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
