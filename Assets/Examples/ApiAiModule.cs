@@ -78,7 +78,7 @@ public class ApiAiModule : MonoBehaviour
 			return true;
 		};
 
-		const string ACCESS_TOKEN = "5566b67b2556447cb8ea0a005475c038";//5566b67b2556447cb8ea0a005475c038 //Default: 3485a96fb27744db83e78b8c4bc9e7b7
+		const string ACCESS_TOKEN = "9df41c2b8ebb4c1c83d3e5ca685e76fa";// - TrappedBot//aVeryPoliticalBot: 5566b67b2556447cb8ea0a005475c038 //Default: 3485a96fb27744db83e78b8c4bc9e7b7
 
 		var config = new AIConfiguration(ACCESS_TOKEN, SupportedLanguage.English);
 
