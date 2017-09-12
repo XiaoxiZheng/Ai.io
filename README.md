@@ -10,6 +10,6 @@ An exploration of Artificial Intelligence & Transhumanism. A digital installatio
 
 #### Documentation
 ![Documentation Image 1](documentation1.jpg)
-![Documentation Image 2](documentation1.jpg)
-![Documentation Image 3](documentation1.jpg)
-![Documentation Image 4](documentation1.jpg)
+![Documentation Image 2](documentation2.jpg)
+![Documentation Image 3](documentation3.jpg)
+![Documentation Image 4](documentation4.jpg)
