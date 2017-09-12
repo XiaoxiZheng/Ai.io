@@ -8,7 +8,7 @@ An exploration of Artificial Intelligence & Transhumanism. A digital installatio
 - [Unity](https://unity3d.com/)
 - [Api.ai](https://api.ai/)
 
-#### Documentation
+## Documentation
 ![Documentation Image 1](documentation1.jpg)
 ![Documentation Image 2](documentation2.jpg)
 ![Documentation Image 3](documentation3.jpg)
